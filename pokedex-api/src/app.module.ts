@@ -5,6 +5,7 @@ import { PokedexModule } from './pokedex/pokedex.module';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -14,12 +15,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       cache: true,
     }),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
+      type: 'better-sqlite3',
       database: process.env.DATABASE_NAME,
       autoLoadEntities: true,
       synchronize: true,
     }),
     PokedexModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
