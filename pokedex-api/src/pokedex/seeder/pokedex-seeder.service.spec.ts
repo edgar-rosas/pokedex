@@ -24,17 +24,31 @@ describe('PokedexSeederService', () => {
         name: 'bulbasaur',
         url: 'https://pokeapi.co/api/v2/pokemon/1/',
       },
+      {
+        name: 'ivysaur',
+        url: 'https://pokeapi.co/api/v2/pokemon/2/',
+      },
+      {
+        name: 'venusaur',
+        url: 'https://pokeapi.co/api/v2/pokemon/3/',
+      },
+      {
+        name: 'charmander',
+        url: 'https://pokeapi.co/api/v2/pokemon/4/',
+      },
     ],
   };
 
-  const mockedPokemonDetailsResponse: PokemonDetailsDto = {
-    id: 1,
-    name: 'bulbasaur',
-    sprites: {
-      front_default:
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-    },
-  };
+  const mockedPokemonDetailsResponse: PokemonDetailsDto[] =
+    mockedPokemonListResponse.results.map((pokemon, index) => {
+      return {
+        id: index + 1,
+        name: pokemon.name,
+        sprites: {
+          front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`,
+        },
+      };
+    });
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -51,7 +65,7 @@ describe('PokedexSeederService', () => {
 
   afterAll(async () => {
     await repository.delete({
-      id: In([mockedPokemonDetailsResponse.id]),
+      name: In(mockedPokemonListResponse.results.map((p) => p.name)),
     });
     await module.close();
   });
@@ -65,9 +79,12 @@ describe('PokedexSeederService', () => {
       mockedAxios.get.mockResolvedValueOnce({
         data: mockedPokemonListResponse,
       });
-      mockedAxios.get.mockResolvedValueOnce({
-        data: mockedPokemonDetailsResponse,
+      mockedPokemonDetailsResponse.forEach((mockedRes) => {
+        mockedAxios.get.mockResolvedValueOnce({
+          data: mockedRes,
+        });
       });
+
       await service.fetchPokemonList();
     });
   });
