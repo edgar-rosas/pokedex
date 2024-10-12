@@ -17,7 +17,7 @@ describe('PokedexSeederService', () => {
 
   const mockedPokemonListResponse: PokemonListDto = {
     count: 5,
-    next: 'next',
+    next: null,
     previous: null,
     results: [
       {
@@ -59,14 +59,14 @@ describe('PokedexSeederService', () => {
     repository = module.get(getRepositoryToken(Pokemon));
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    await repository.delete({
+      name: In(mockedPokemonListResponse.results.map((p) => p.name)),
+    });
     jest.clearAllMocks();
   });
 
   afterAll(async () => {
-    await repository.delete({
-      name: In(mockedPokemonListResponse.results.map((p) => p.name)),
-    });
     await module.close();
   });
 
@@ -85,7 +85,91 @@ describe('PokedexSeederService', () => {
         });
       });
 
-      await service.fetchPokemonList();
+      const reports = await service.fetchPokemonList();
+      expect(reports).toHaveLength(1);
+      expect(reports).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            insertCount: 4,
+          }),
+        ]),
+      );
+    });
+
+    it('should stop fetching when next url is null', async () => {
+      function delay(t: number, val: unknown) {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve(val);
+          }, t);
+        });
+      }
+
+      for (let i = 0; i < mockedPokemonListResponse.results.length - 1; i++) {
+        mockedAxios.get.mockImplementationOnce(() => {
+          return delay(500, {
+            data: {
+              ...mockedPokemonListResponse,
+              next: 'url' + i,
+              results: [mockedPokemonListResponse.results[i]],
+            },
+          });
+        });
+        mockedAxios.get.mockImplementationOnce(() => {
+          return delay(500, {
+            data: mockedPokemonDetailsResponse[i],
+          });
+        });
+      }
+
+      mockedAxios.get.mockResolvedValueOnce({
+        data: {
+          ...mockedPokemonListResponse,
+          next: null,
+          results: [
+            mockedPokemonListResponse.results[
+              mockedPokemonListResponse.results.length - 1
+            ],
+          ],
+        },
+      });
+
+      mockedAxios.get.mockResolvedValueOnce({
+        data: mockedPokemonDetailsResponse[
+          mockedPokemonListResponse.results.length - 1
+        ],
+      });
+
+      const reports = await service.fetchPokemonList();
+
+      expect(reports).toHaveLength(4);
+      expect(reports).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            insertCount: 1,
+          }),
+          expect.objectContaining({
+            insertCount: 1,
+          }),
+          expect.objectContaining({
+            insertCount: 1,
+          }),
+          expect.objectContaining({
+            insertCount: 1,
+          }),
+        ]),
+      );
+
+      const [pokemon, count] = await repository.findAndCount();
+      expect(count).toEqual(4);
+
+      expect(pokemon).toEqual(
+        expect.arrayContaining(
+          mockedPokemonListResponse.results.map((p) =>
+            expect.objectContaining({ name: p.name }),
+          ),
+        ),
+      );
     });
   });
 });
