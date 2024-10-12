@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Pokemon } from './entities/pokemon.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { OrderType } from '../common/enum/order-type.enum';
+import { FindAllPokemonDto } from './dto/find-all-pokemon.dto';
 
 @Injectable()
 export class PokedexService {
@@ -12,13 +12,18 @@ export class PokedexService {
     private pokemonRepository: Repository<Pokemon>,
   ) {}
 
-  async findAll(pagination?: PaginationQueryDto) {
+  async findAll(params?: FindAllPokemonDto) {
     return this.pokemonRepository.findAndCount({
+      where: params?.name
+        ? {
+            name: Like(`%${params.name}%`),
+          }
+        : undefined,
       order: {
-        id: pagination?.order || OrderType.ASC,
+        id: params?.order || OrderType.ASC,
       },
-      skip: pagination?.offset || null,
-      take: pagination?.limit || null,
+      skip: params?.offset || null,
+      take: params?.limit || null,
     });
   }
 }
