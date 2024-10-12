@@ -3,7 +3,7 @@ import { Pokemon } from './entities/pokemon.entity';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderType } from '../common/enum/order-type.enum';
-import { FindAllPokemonDto } from './dto/find-all-pokemon.dto';
+import { FindAllPokemonQueryDto } from './dto/find-all-pokemon-query.dto';
 
 @Injectable()
 export class PokedexService {
@@ -12,7 +12,7 @@ export class PokedexService {
     private pokemonRepository: Repository<Pokemon>,
   ) {}
 
-  async findAll(params?: FindAllPokemonDto) {
+  async findAll(params?: FindAllPokemonQueryDto) {
     return this.pokemonRepository.findAndCount({
       where: params?.name
         ? {
@@ -22,8 +22,8 @@ export class PokedexService {
       order: {
         id: params?.order || OrderType.ASC,
       },
-      skip: params?.offset || null,
-      take: params?.limit || null,
+      skip: params?.offset || 0,
+      take: params?.limit || 20,
     });
   }
 }
