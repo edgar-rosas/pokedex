@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PokedexSeederService } from './pokedex-seeder.service';
-import { AppModule } from '../../app.module';
 import axios from 'axios';
 import { PokemonListDto } from './dto/pokemon-list.dto';
 import { In, Repository } from 'typeorm';
 import { Pokemon } from '../entities/pokemon.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { PokemonDetailsDto } from './dto/pokemon-details.dto';
+import { PokedexModule } from '../pokedex.module';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -52,7 +52,15 @@ describe('PokedexSeederService', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        TypeOrmModule.forRoot({
+          type: 'better-sqlite3',
+          database: 'sqlite-pokedex-testing.sqlite3',
+          autoLoadEntities: true,
+          synchronize: true,
+        }),
+        PokedexModule,
+      ],
     }).compile();
 
     service = module.get(PokedexSeederService);
