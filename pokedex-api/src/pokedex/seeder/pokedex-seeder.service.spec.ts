@@ -172,4 +172,24 @@ describe('PokedexSeederService', () => {
       );
     });
   });
+
+  describe('seed', () => {
+    it('starts seeding process when local count is 0', async () => {
+      const fetchPokemonListSpy = jest.spyOn(service, 'fetchPokemonList');
+
+      mockedAxios.get.mockResolvedValueOnce({
+        data: mockedPokemonListResponse,
+      });
+
+      mockedPokemonDetailsResponse.forEach((mockedRes) => {
+        mockedAxios.get.mockResolvedValueOnce({
+          data: mockedRes,
+        });
+      });
+      await service.seed();
+
+      expect(fetchPokemonListSpy).toHaveBeenCalled();
+      fetchPokemonListSpy.mockRestore();
+    });
+  });
 });

@@ -19,6 +19,19 @@ export class PokedexSeederService {
     private pokemonRepository: Repository<Pokemon>,
   ) {}
 
+  async seed(): Promise<void> {
+    const localPokemonCount = await this.pokemonRepository.count();
+    if (localPokemonCount === 0) {
+      console.log(
+        `Found ${localPokemonCount} Pokemon in local DB, starting seed process...`,
+      );
+      await this.fetchPokemonList();
+      console.log('Seeding process complete');
+    } else {
+      console.log(`Found ${localPokemonCount} Pokemon in local DB`);
+    }
+  }
+
   async fetchPokemonList(): Promise<BatchReport[]> {
     let pokeApiUrl = 'https://pokeapi.co/api/v2/pokemon/';
     const reports: BatchReport[] = [];
@@ -30,7 +43,10 @@ export class PokedexSeederService {
       }
       return reports;
     } catch (error) {
-      console.error('Error occured during Pokedex seeding process', { error });
+      console.error('Error occured during Pokedex seeding process', {
+        error,
+        lastReport: reports.length > 0 ? reports[reports.length - 1] : null,
+      });
       return [];
     }
   }
