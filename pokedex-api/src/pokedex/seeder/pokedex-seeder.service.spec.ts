@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PokedexSeederService } from './pokedex-seeder.service';
 import axios from 'axios';
-import { PokemonListDto } from './dto/pokemon-list.dto';
 import { In, Repository } from 'typeorm';
 import { Pokemon } from '../entities/pokemon.entity';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { PokemonDetailsDto } from './dto/pokemon-details.dto';
 import { PokedexModule } from '../pokedex.module';
+import {
+  mockedPokemonDetailsResponse,
+  mockedPokemonListResponse,
+} from '../data/test.data';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -14,41 +16,6 @@ describe('PokedexSeederService', () => {
   let module: TestingModule;
   let service: PokedexSeederService;
   let repository: Repository<Pokemon>;
-
-  const mockedPokemonListResponse: PokemonListDto = {
-    count: 5,
-    next: null,
-    previous: null,
-    results: [
-      {
-        name: 'bulbasaur',
-        url: 'https://pokeapi.co/api/v2/pokemon/1/',
-      },
-      {
-        name: 'ivysaur',
-        url: 'https://pokeapi.co/api/v2/pokemon/2/',
-      },
-      {
-        name: 'venusaur',
-        url: 'https://pokeapi.co/api/v2/pokemon/3/',
-      },
-      {
-        name: 'charmander',
-        url: 'https://pokeapi.co/api/v2/pokemon/4/',
-      },
-    ],
-  };
-
-  const mockedPokemonDetailsResponse: PokemonDetailsDto[] =
-    mockedPokemonListResponse.results.map((pokemon, index) => {
-      return {
-        id: index + 1400,
-        name: pokemon.name,
-        sprites: {
-          front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`,
-        },
-      };
-    });
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
