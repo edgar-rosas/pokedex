@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Pokemon } from './entities/pokemon.entity';
 import { PokedexSeederService } from './seeder/pokedex-seeder.service';
@@ -7,4 +7,9 @@ import { PokedexSeederService } from './seeder/pokedex-seeder.service';
   imports: [TypeOrmModule.forFeature([Pokemon])],
   providers: [PokedexSeederService],
 })
-export class PokedexModule {}
+export class PokedexModule implements OnApplicationBootstrap {
+  constructor(private readonly pokedexSeeder: PokedexSeederService) {}
+  async onApplicationBootstrap(): Promise<void> {
+    await this.pokedexSeeder.seed();
+  }
+}

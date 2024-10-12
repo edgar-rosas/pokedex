@@ -42,7 +42,7 @@ describe('PokedexSeederService', () => {
   const mockedPokemonDetailsResponse: PokemonDetailsDto[] =
     mockedPokemonListResponse.results.map((pokemon, index) => {
       return {
-        id: index + 1,
+        id: index + 1400,
         name: pokemon.name,
         sprites: {
           front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`,

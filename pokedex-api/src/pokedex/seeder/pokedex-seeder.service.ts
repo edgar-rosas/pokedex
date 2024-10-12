@@ -37,6 +37,7 @@ export class PokedexSeederService {
     const reports: BatchReport[] = [];
     try {
       while (pokeApiUrl !== null) {
+        console.log(`Processing: ${pokeApiUrl}`);
         const report = await this.processBatch(pokeApiUrl);
         reports.push(report);
         pokeApiUrl = report.next;
