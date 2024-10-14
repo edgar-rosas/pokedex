@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryColumn, Unique } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryColumn, Unique } from 'typeorm';
 import { PokemonDetailsDto } from '../seeder/dto/pokemon-details.dto';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 @Unique('pokemon_name_uq', ['name'])
@@ -12,6 +13,9 @@ export class Pokemon {
 
   @Column()
   image: string;
+
+  @ManyToMany(() => User, (user) => user.favoritePokemon)
+  markedAsFavoriteBy: User[];
 }
 
 export function createPokemon(pokemonDto: PokemonDetailsDto): Pokemon {
