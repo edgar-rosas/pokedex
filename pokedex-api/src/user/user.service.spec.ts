@@ -6,6 +6,7 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user.module';
 import { CreateUserDto } from './dto/create-user-dto';
 import { createUserTestData } from './data/test.data';
+import { ConflictException } from '@nestjs/common';
 
 describe('UserService', () => {
   let module: TestingModule;
@@ -33,13 +34,13 @@ describe('UserService', () => {
   });
 
   afterEach(async () => {
+    await repository.delete({
+      name: In(userTestData.map((u) => u.name)),
+    });
     jest.clearAllMocks();
   });
 
   afterAll(async () => {
-    await repository.delete({
-      name: In(userTestData.map((u) => u.name)),
-    });
     await module.close();
   });
 
@@ -57,10 +58,12 @@ describe('UserService', () => {
       expect(newUser.name).toBe(userTestData[0].name);
     });
 
-    it('handles unique name problems', async () => {
+    it('throws conflict exception when name is not unique', async () => {
       await service.createUser(userTestData[0]);
 
-      await service.createUser(userTestData[0]);
+      expect(async () => {
+        await service.createUser(userTestData[0]);
+      }).rejects.toThrow(ConflictException);
     });
   });
 });
