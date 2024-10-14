@@ -25,3 +25,9 @@ export class User {
   })
   favoritePokemon: Pokemon[];
 }
+
+export function createUser(name: string): User {
+  const user = new User();
+  user.name = name;
+  return user;
+}
