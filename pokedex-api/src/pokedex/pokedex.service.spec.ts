@@ -55,21 +55,21 @@ describe('PokedexService', () => {
 
   describe('findAll', () => {
     it('returns pokemon', async () => {
-      const [pokemon, count] = await service.findAll({ limit: 2, offset: 2 });
+      const { pokemon, count } = await service.findAll({ limit: 2, offset: 2 });
 
       expect(count).toBe(mockedPokemonDetailsResponse.length);
       expect(pokemon).toHaveLength(2);
     });
 
     it('returns pokemon by name', async () => {
-      const [pokemon, count] = await service.findAll({ name: 'bulbasaur' });
+      const { pokemon, count } = await service.findAll({ name: 'bulbasaur' });
 
       expect(count).toBe(1);
       expect(pokemon).toHaveLength(1);
     });
 
     it('returns empty array', async () => {
-      const [pokemon, count] = await service.findAll({ name: 'not found' });
+      const { pokemon, count } = await service.findAll({ name: 'not found' });
 
       expect(count).toBe(0);
       expect(pokemon).toHaveLength(0);

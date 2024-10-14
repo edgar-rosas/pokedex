@@ -1,11 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Pokemon } from '../entities/pokemon.entity';
 import { mockedPokemonListResponse } from '../data/test.data';
+import { FindAllPokemonWithUserFavorites } from '../pokedex.service';
 
 export class FindAllPokemonResponseDto {
-  constructor(pokemon: Pokemon[], count: number) {
-    this.count = count;
-    this.pokemon = pokemon.map((p) => new PokemonDto(p));
+  constructor(data: FindAllPokemonWithUserFavorites) {
+    this.count = data.count;
+    this.pokemon = data.pokemon.map(
+      (p) => new PokemonDto(p, data.favoriteIds?.includes(p.id)),
+    );
   }
   @ApiProperty({
     description: 'List of pokemon',
@@ -26,10 +29,11 @@ export class FindAllPokemonResponseDto {
 }
 
 export class PokemonDto {
-  constructor(pokemon: Pokemon) {
+  constructor(pokemon: Pokemon, isFavorite: boolean) {
     this.id = pokemon.id;
     this.name = pokemon.name;
     this.image = pokemon.image;
+    this.isFavorite = isFavorite;
   }
   @ApiProperty({
     description: 'Pokemon ID',
@@ -45,4 +49,10 @@ export class PokemonDto {
     description: 'Pokemon sprite image URL',
   })
   image: string;
+
+  @ApiProperty({
+    description:
+      'Indicates if this Pokemon has been marked as favorite by current user',
+  })
+  isFavorite: boolean;
 }
