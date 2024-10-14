@@ -9,6 +9,7 @@ import { PokedexController } from './pokedex.controller';
   imports: [TypeOrmModule.forFeature([Pokemon])],
   providers: [PokedexSeederService, PokedexService],
   controllers: [PokedexController],
+  exports: [PokedexService],
 })
 export class PokedexModule implements OnApplicationBootstrap {
   constructor(private readonly pokedexSeeder: PokedexSeederService) {}

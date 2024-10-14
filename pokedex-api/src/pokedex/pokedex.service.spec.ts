@@ -52,6 +52,7 @@ describe('PokedexService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
   describe('findAll', () => {
     it('returns pokemon', async () => {
       const [pokemon, count] = await service.findAll({ limit: 2, offset: 2 });
@@ -72,6 +73,23 @@ describe('PokedexService', () => {
 
       expect(count).toBe(0);
       expect(pokemon).toHaveLength(0);
+    });
+  });
+
+  describe('findByID', () => {
+    it('returns pokemon found by ID', async () => {
+      const foundPokemon = await service.findById(1400);
+
+      expect(foundPokemon).toBeTruthy();
+      expect(foundPokemon).toBeInstanceOf(Pokemon);
+
+      expect(foundPokemon.id).toBe(1400);
+    });
+
+    it('returns null if nothing is found', async () => {
+      const pokemon = await service.findById(0);
+
+      expect(pokemon).toBeNull();
     });
   });
 });

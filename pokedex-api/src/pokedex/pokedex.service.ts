@@ -26,4 +26,12 @@ export class PokedexService {
       take: params?.limit || 20,
     });
   }
+
+  async findById(id: number) {
+    return this.pokemonRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
 }

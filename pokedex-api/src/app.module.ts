@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { PokedexModule } from './pokedex/pokedex.module';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -18,7 +17,6 @@ import { UserModule } from './user/user.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    PokedexModule,
     UserModule,
   ],
 })
