@@ -12,8 +12,12 @@ import {
   SQLITE_PRIMARY_CONSTRAINT_ERROR_CODE,
   SQLITE_UNIQUE_CONSTRAINT_ERROR_CODE,
 } from '../common/constants';
-import { MarkAsFavoriteDto } from './dto/mark-as-favorite.dto';
 import { PokedexService } from '../pokedex/pokedex.service';
+
+export type FavoritePokemonParams = {
+  pokemonId: number;
+  userId: number;
+};
 
 @Injectable()
 export class UserService {
@@ -39,7 +43,7 @@ export class UserService {
     }
   }
 
-  async markPokemonAsFavorite(params: MarkAsFavoriteDto) {
+  async markPokemonAsFavorite(params: FavoritePokemonParams) {
     const { targetUser, targetPokemon } =
       await this.retrieveTargetEntities(params);
 
@@ -59,7 +63,7 @@ export class UserService {
     }
   }
 
-  async removePokemonAsFavorite(params: MarkAsFavoriteDto) {
+  async removePokemonAsFavorite(params: FavoritePokemonParams) {
     const { targetUser, targetPokemon } =
       await this.retrieveTargetEntities(params);
 
@@ -70,7 +74,7 @@ export class UserService {
       .remove(targetPokemon);
   }
 
-  private async retrieveTargetEntities(params: MarkAsFavoriteDto) {
+  private async retrieveTargetEntities(params: FavoritePokemonParams) {
     const targetPokemon = await this.pokedexService.findById(params.pokemonId);
 
     if (!targetPokemon) {
