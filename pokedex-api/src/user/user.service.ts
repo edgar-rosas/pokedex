@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createUser, User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user-dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { queryFailedGuard } from '../common/errors/guards';
 import { SQLITE_UNIQUE_CONSTRAINT_ERROR_CODE } from '../common/constants';
 

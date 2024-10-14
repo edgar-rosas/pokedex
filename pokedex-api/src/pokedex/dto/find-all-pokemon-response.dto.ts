@@ -9,7 +9,6 @@ export class FindAllPokemonResponseDto {
   }
   @ApiProperty({
     description: 'List of pokemon',
-    type: [Pokemon],
     example: mockedPokemonListResponse.results.map((pokemon, index) => {
       return {
         id: index + 1400,

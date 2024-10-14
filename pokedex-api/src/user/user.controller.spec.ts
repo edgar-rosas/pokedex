@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
+import { UserController } from './user.controller';
+import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { In, Repository } from 'typeorm';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user.module';
-import { CreateUserDto } from './dto/create-user.dto';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { createUserTestData } from './data/test.data';
 import { ConflictException } from '@nestjs/common';
 
-describe('UserService', () => {
+describe('UserController', () => {
+  let controller: UserController;
   let module: TestingModule;
-  let service: UserService;
   let repository: Repository<User>;
   let userTestData: CreateUserDto[];
 
@@ -27,7 +27,7 @@ describe('UserService', () => {
       ],
     }).compile();
 
-    service = module.get(UserService);
+    controller = module.get<UserController>(UserController);
     repository = module.get(getRepositoryToken(User));
 
     userTestData = createUserTestData();
@@ -45,24 +45,22 @@ describe('UserService', () => {
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(controller).toBeDefined();
   });
 
   describe('createUser', () => {
     it('creates a new user', async () => {
-      const newUser = await service.createUser(userTestData[0]);
+      const res = await controller.createUser(userTestData[0]);
 
-      expect(newUser).toBeTruthy();
-      expect(newUser).toBeInstanceOf(User);
-
-      expect(newUser.name).toBe(userTestData[0].name);
+      expect(res).toBeTruthy();
+      expect(res.user.name).toBe(userTestData[0].name);
     });
 
     it('throws conflict exception when name is not unique', async () => {
-      await service.createUser(userTestData[0]);
+      await controller.createUser(userTestData[0]);
 
       expect(async () => {
-        await service.createUser(userTestData[0]);
+        await controller.createUser(userTestData[0]);
       }).rejects.toThrow(ConflictException);
     });
   });
