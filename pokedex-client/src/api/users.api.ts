@@ -17,3 +17,25 @@ export const createUser = async (name?: string): Promise<User> => {
   localStorage.setItem("userId", createUserRes.data.user.id.toString());
   return createUserRes.data.user;
 };
+
+type FavoriteResponse = {
+  message: string;
+};
+
+export const markAsFavorite = async (pokemonId: string) => {
+  const res = await axiosClient.post<FavoriteResponse>("/user/favorites", {
+    pokemonId,
+  });
+
+  console.log("res", res.status);
+};
+
+export const removeFromFavorites = async (pokemonId: string) => {
+  const res = await axiosClient.delete<FavoriteResponse>("/user/favorites", {
+    data: {
+      pokemonId,
+    },
+  });
+
+  console.log("res", res.status);
+};
