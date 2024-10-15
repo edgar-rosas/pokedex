@@ -2,6 +2,7 @@ import { AppShell, createTheme, MantineProvider } from "@mantine/core";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Header } from "../components/Header";
+import { Notifications } from "@mantine/notifications";
 
 const theme = createTheme({});
 
@@ -14,6 +15,7 @@ export const Route = createRootRoute({
           padding="md"
         >
           <AppShell.Header>
+            <Notifications />
             <Header />
           </AppShell.Header>
           <AppShell.Main>

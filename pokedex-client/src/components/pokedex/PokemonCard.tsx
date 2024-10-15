@@ -1,11 +1,23 @@
-import { Card, Image, Text, Badge, Group } from "@mantine/core";
+import { Card, Image, Text, Group, Chip } from "@mantine/core";
 import { Pokemon } from "../../api/pokedex.api";
+import { useState } from "react";
+import { FavoriteBodyRequest } from "../../api/users.api";
 
 type PokemonCardProps = {
   pokemon: Pokemon;
+  handleFavorite: (params: FavoriteBodyRequest) => void;
 };
 
-export function PokemonCard({ pokemon }: PokemonCardProps) {
+export function PokemonCard({ pokemon, handleFavorite }: PokemonCardProps) {
+  const [favorite, setFavorite] = useState(pokemon.isFavorite);
+
+  const onChangeFavorite = () => {
+    setFavorite((f) => {
+      handleFavorite({ pokemonId: pokemon.id, isFavorite: !f });
+      return !f;
+    });
+  };
+
   return (
     <Card shadow="sm" padding="sm" radius="md" withBorder>
       <Card.Section>
@@ -22,7 +34,9 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
 
       <Group justify="space-between" mt="md" mb="xs">
         <Text fw={500}>{pokemon.name}</Text>
-        <Badge color="pink">On Sale</Badge>
+        <Chip onChange={onChangeFavorite} checked={favorite} color="yellow">
+          Favorite
+        </Chip>
       </Group>
     </Card>
   );

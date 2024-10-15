@@ -9,6 +9,8 @@ import {
 } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
+import { FavoriteBodyRequest, markAsFavorite } from "../api/users.api";
+import { notifications } from "@mantine/notifications";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -21,9 +23,20 @@ function Index() {
 
   const [search, setSearch] = useState(name);
 
-  const cards = data.pokemon.map((p) => {
-    return <PokemonCard key={p.id} pokemon={p} />;
-  });
+  const handleFavorite = useDebouncedCallback(
+    async (params: FavoriteBodyRequest) => {
+      const res = await markAsFavorite(params);
+      if (res.status === 201 || res.status === 200) {
+        notifications.show({
+          title: "Update successful",
+          color: "green",
+          position: "top-right",
+          message: res.data.message,
+        });
+      }
+    },
+    500
+  );
 
   const handleSearch = useDebouncedCallback(async (query: string) => {
     navigate({
@@ -31,12 +44,19 @@ function Index() {
     });
   }, 500);
 
+  const cards = data.pokemon.map((p) => {
+    return (
+      <PokemonCard key={p.id} pokemon={p} handleFavorite={handleFavorite} />
+    );
+  });
+
   return (
     <div>
       <Container size="md" mb="lg">
         <Group justify="center" grow>
           <TextInput
             label="Search Pokemon by name"
+            placeholder="Search by name"
             value={search}
             onChange={(event) => {
               setSearch(event.currentTarget.value);

@@ -1,5 +1,6 @@
 import { randUserName } from "@ngneat/falso";
 import axiosClient from "./axios";
+import { AxiosResponse } from "axios";
 
 type UserResponse = {
   user: User;
@@ -22,20 +23,28 @@ type FavoriteResponse = {
   message: string;
 };
 
-export const markAsFavorite = async (pokemonId: string) => {
-  const res = await axiosClient.post<FavoriteResponse>("/user/favorites", {
-    pokemonId,
-  });
-
-  console.log("res", res.status);
+export type FavoriteBodyRequest = {
+  pokemonId: number;
+  isFavorite: boolean;
 };
 
-export const removeFromFavorites = async (pokemonId: string) => {
-  const res = await axiosClient.delete<FavoriteResponse>("/user/favorites", {
-    data: {
-      pokemonId,
-    },
-  });
+export const markAsFavorite = async ({
+  pokemonId,
+  isFavorite,
+}: FavoriteBodyRequest) => {
+  let res: AxiosResponse<FavoriteResponse>;
 
-  console.log("res", res.status);
+  if (isFavorite) {
+    res = await axiosClient.post<FavoriteResponse>("/user/favorites", {
+      pokemonId,
+    });
+  } else {
+    res = await axiosClient.delete<FavoriteResponse>("/user/favorites", {
+      data: {
+        pokemonId,
+      },
+    });
+  }
+
+  return res;
 };
