@@ -11,6 +11,7 @@ import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
 import { FavoriteBodyRequest, markAsFavorite } from "../api/users.api";
 import { notifications } from "@mantine/notifications";
+import { NotFound } from "../components/NotFound";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -65,27 +66,33 @@ function Index() {
           />
         </Group>
       </Container>
-      <SimpleGrid
-        cols={{ base: 1, sm: 2, lg: 4 }}
-        spacing={{ base: 10, sm: "xl" }}
-        verticalSpacing={{ base: "md", sm: "xl" }}
-      >
-        {cards}
-      </SimpleGrid>
-      <Group justify="center">
-        <Pagination
-          color="red"
-          radius="xl"
-          total={Math.ceil(data.count / 20)}
-          value={page || 1}
-          onChange={(val: number) => {
-            navigate({
-              search: { page: val, name },
-            });
-          }}
-          mt="sm"
-        />
-      </Group>
+      {data.pokemon.length > 0 && data.count > 0 ? (
+        <Container>
+          <SimpleGrid
+            cols={{ base: 1, sm: 2, lg: 5 }}
+            spacing={{ base: 10, sm: "xl" }}
+            verticalSpacing={{ base: "md", sm: "xl" }}
+          >
+            {cards}
+          </SimpleGrid>
+          <Group justify="center">
+            <Pagination
+              color="red"
+              radius="xl"
+              total={Math.ceil(data.count / 20)}
+              value={page || 1}
+              onChange={(val: number) => {
+                navigate({
+                  search: { page: val, name },
+                });
+              }}
+              mt="sm"
+            />
+          </Group>
+        </Container>
+      ) : (
+        <NotFound />
+      )}
     </div>
   );
 }
