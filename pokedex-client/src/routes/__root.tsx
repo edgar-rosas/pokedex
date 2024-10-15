@@ -15,7 +15,7 @@ export const Route = createRootRoute({
           padding="md"
         >
           <AppShell.Header>
-            <Notifications />
+            <Notifications autoClose={1150} position="top-right" />
             <Header />
           </AppShell.Header>
           <AppShell.Main>
