@@ -9,12 +9,14 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use(function (config) {
-  if (!config.headers.user) {
-    const userId = localStorage.getItem("userId");
+  const storedUserId = localStorage.getItem("userId");
+  if (!config.headers.user && storedUserId) {
+    const userId = parseInt(storedUserId, 10);
+    config.headers.user = userId;
+  }
 
-    if (userId) {
-      config.headers.user = userId;
-    }
+  if (config.method === "POST") {
+    config.headers["Content-Type"] = "multipart/form-data";
   }
 
   return config;
